@@ -8,6 +8,7 @@ include_directories(include)
 find_package(GTest)
 include(GoogleTest)
 find_package(benchmark)
+find_package(Doxygen)
 
 add_executable(usage examples/usage.cpp)
 add_executable(result_tests tests/result_tests.cpp)
@@ -26,3 +27,10 @@ add_custom_target(benchmark
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     DEPENDS bench
 )
+
+if(DOXYGEN_FOUND)
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        VERBATIM)
+endif()

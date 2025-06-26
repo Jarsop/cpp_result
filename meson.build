@@ -28,3 +28,12 @@ bench = executable(
     dependencies: gbench_dep,
 )
 benchmark('exception_errorcode_result', bench)
+
+doxygen = find_program('doxygen', required: false)
+if doxygen.found()
+    run_target(
+        'doc',
+        command: [doxygen, meson.global_source_root() / 'Doxyfile'],
+        env: ['WORKING_ROOT=' + meson.global_source_root() + '/'],
+    )
+endif
