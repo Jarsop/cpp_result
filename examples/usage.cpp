@@ -17,23 +17,38 @@ MyResult<int> divide(int a, int b) noexcept {
 
 int main() {
   auto result = divide(10, 2);
-  if (result.is_ok())
+  if (result.is_ok()) {
     std::cout << "Result: " << result.unwrap() << "\n";
-  else
+    std::cout << "Result (expect): " << result.expect("Should not fail")
+              << "\n";
+  } else {
     std::cout << "Error: " << result.unwrap_err().message << "\n";
+    std::cout << "Error (expect_err): "
+              << result.expect_err("Should not fail").message << "\n";
+  }
 
   auto mapped = result.map([](int val) { return val * 2; });
-  if (mapped.is_ok())
+  if (mapped.is_ok()) {
     std::cout << "Mapped Result: " << mapped.unwrap() << "\n";
-  else
+    std::cout << "Mapped Result (expect): " << mapped.expect("Should not fail")
+              << "\n";
+  } else {
     std::cout << "Mapped Error: " << mapped.unwrap_err().message << "\n";
+    std::cout << "Mapped Error (expect_err): "
+              << mapped.expect_err("Should not fail").message << "\n";
+  }
 
   auto chained = result.and_then(
       [](int val) { return MyResult<std::string>::Ok(std::to_string(val)); });
-  if (chained.is_ok())
+  if (chained.is_ok()) {
     std::cout << "Chained Result: " << chained.unwrap() << "\n";
-  else
+    std::cout << "Chained Result (expect): "
+              << chained.expect("Should not fail") << "\n";
+  } else {
     std::cout << "Chained Error: " << chained.unwrap_err().message << "\n";
+    std::cout << "Chained Error (expect_err): "
+              << chained.expect_err("Should not fail").message << "\n";
+  }
 
   auto error_result = divide(10, 0);
   int val = error_result.unwrap_or(42);
@@ -52,10 +67,12 @@ int main() {
     std::cout << "Mapped Result: " << mapped_err.unwrap() << "\n";
 
   VoidResult void_ok = VoidResult::Ok();
-  if (void_ok.is_ok())
+  if (void_ok.is_ok()) {
     std::cout << "Void Ok: success!\n";
-  else
+    void_ok.expect("Void should not fail");
+  } else {
     std::cout << "Void Ok: error!\n";
+  }
 
   VoidResult void_err = VoidResult::Err({"Some void error"});
   if (void_err.is_err())

@@ -1,8 +1,18 @@
 #pragma once
 
-#include <cassert>
+#include <cstdio>
+#include <cstdlib>
 #include <type_traits>
 #include <utility>
+
+#define EXPECT_OR_ABORT(cond, msg)                                             \
+  do {                                                                         \
+    if (!(cond)) {                                                             \
+      std::fputs(msg, stderr);                                                 \
+      std::fputc('\n', stderr);                                                \
+      std::abort();                                                            \
+    }                                                                          \
+  } while (0)
 
 namespace cpp_result {
 
@@ -18,20 +28,20 @@ public:
   constexpr bool is_err() const noexcept { return !is_ok_; }
 
   inline T &unwrap() noexcept {
-    assert(is_ok_);
+    EXPECT_OR_ABORT(is_ok_, "unwrap called on Result::Err()");
     return data_.value;
   }
   inline const T &unwrap() const noexcept {
-    assert(is_ok_);
+    EXPECT_OR_ABORT(is_ok_, "unwrap called on Result::Err()");
     return data_.value;
   }
 
   inline E &unwrap_err() noexcept {
-    assert(!is_ok_);
+    EXPECT_OR_ABORT(!is_ok_, "unwrap_err called on Result::Ok()");
     return data_.error;
   }
   inline const E &unwrap_err() const noexcept {
-    assert(!is_ok_);
+    EXPECT_OR_ABORT(!is_ok_, "unwrap_err called on Result::Ok()");
     return data_.error;
   }
 
@@ -64,6 +74,26 @@ public:
     if (is_ok_)
       return func(data_.value);
     return R::Err(data_.error);
+  }
+
+  T &expect(const char *msg) noexcept {
+    EXPECT_OR_ABORT(is_ok_, msg);
+    return data_.value;
+  }
+
+  const T &expect(const char *msg) const noexcept {
+    EXPECT_OR_ABORT(is_ok_, msg);
+    return data_.value;
+  }
+
+  E &expect_err(const char *msg) noexcept {
+    EXPECT_OR_ABORT(!is_ok_, msg);
+    return data_.error;
+  }
+
+  const E &expect_err(const char *msg) const noexcept {
+    EXPECT_OR_ABORT(!is_ok_, msg);
+    return data_.error;
   }
 
   ~Result() { destroy(); }
@@ -118,13 +148,13 @@ public:
   }
 
 private:
-  bool is_ok_;
   union Data {
     T value;
     E error;
     Data() {}
     ~Data() {}
   } data_;
+  bool is_ok_;
 
   explicit Result(T val) noexcept : is_ok_(true) {
     new (&data_.value) T(std::move(val));
@@ -149,14 +179,16 @@ public:
   inline bool is_ok() const noexcept { return is_ok_; }
   inline bool is_err() const noexcept { return !is_ok_; }
 
-  inline void unwrap() noexcept { assert(is_ok_); }
+  inline void unwrap() noexcept {
+    EXPECT_OR_ABORT(is_ok_, "unwrap called on Result::Err()");
+  }
 
   inline E &unwrap_err() noexcept {
-    assert(!is_ok_);
+    EXPECT_OR_ABORT(!is_ok_, "unwrap_err called on Result::Ok()");
     return error_;
   }
   inline const E &unwrap_err() const noexcept {
-    assert(!is_ok_);
+    EXPECT_OR_ABORT(!is_ok_, "unwrap_err called on Result::Ok()");
     return error_;
   }
 
@@ -180,6 +212,18 @@ public:
     if (is_ok_)
       return func();
     return R::Err(error_);
+  }
+
+  void expect(const char msg[]) const noexcept { EXPECT_OR_ABORT(is_ok_, msg); }
+
+  E &expect_err(const char msg[]) noexcept {
+    EXPECT_OR_ABORT(!is_ok_, msg);
+    return error_;
+  }
+
+  const E &expect_err(const char msg[]) const noexcept {
+    EXPECT_OR_ABORT(!is_ok_, msg);
+    return error_;
   }
 
   // Move semantics
@@ -217,8 +261,8 @@ public:
   }
 
 private:
-  bool is_ok_;
   E error_;
+  bool is_ok_;
 
   Result() noexcept : is_ok_(true) {}
   explicit Result(E err) noexcept : is_ok_(false) {

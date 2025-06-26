@@ -129,3 +129,43 @@ TEST(ResultTest, VoidAndThen) {
   EXPECT_TRUE(chained_err.is_err());
   EXPECT_EQ(chained_err.unwrap_err().message, "void fail");
 }
+
+TEST(ResultTest, UnwrapDeathOnErr) {
+  auto res = TestResult<int>::Err({"fail"});
+  EXPECT_DEATH(res.unwrap(), "unwrap called on Result::Err()");
+}
+
+TEST(ResultTest, UnwrapErrDeathOnOk) {
+  auto res = TestResult<int>::Ok(123);
+  EXPECT_DEATH(res.unwrap_err(), "unwrap_err called on Result::Ok()");
+}
+
+TEST(ResultTest, ExpectReturnsValueOnOk) {
+  auto res = TestResult<int>::Ok(42);
+  EXPECT_EQ(res.expect("should not fail"), 42);
+}
+
+TEST(ResultTest, ExpectDeathOnErr) {
+  auto res = TestResult<int>::Err({"fail"});
+  EXPECT_DEATH(res.expect("custom error message"), "custom error message");
+}
+
+TEST(ResultTest, ExpectErrReturnsErrorOnErr) {
+  auto res = TestResult<int>::Err({"fail"});
+  EXPECT_EQ(res.expect_err("should not fail").message, "fail");
+}
+
+TEST(ResultTest, ExpectErrDeathOnOk) {
+  auto res = TestResult<int>::Ok(123);
+  EXPECT_DEATH(res.expect_err("custom error message"), "custom error message");
+}
+
+TEST(ResultTest, VoidExpectDeathOnErr) {
+  VoidResult res = VoidResult::Err({"fail"});
+  EXPECT_DEATH(res.expect("void error"), "void error");
+}
+
+TEST(ResultTest, VoidExpectErrDeathOnOk) {
+  VoidResult res = VoidResult::Ok();
+  EXPECT_DEATH(res.expect_err("should fail"), "should fail");
+}
