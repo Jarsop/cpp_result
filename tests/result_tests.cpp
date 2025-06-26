@@ -6,75 +6,81 @@ struct Error {
   std::string message;
 };
 
-template <typename T> using TestResult = cpp_result::Result<T, Error>;
-using VoidResult = cpp_result::Result<void, Error>;
+template <typename T> using Result = cpp_result::Result<T, Error>;
+
+template <typename T> inline Result<T> Ok(T value) {
+  return Result<T>::Ok(std::forward<T>(value));
+}
+template <typename T> inline Result<T> Err(Error err) {
+  return Result<T>::Err(std::move(err));
+}
 
 TEST(ResultTest, OkValue) {
-  auto res = TestResult<int>::Ok(10);
+  auto res = Ok<int>(10);
   EXPECT_TRUE(res.is_ok());
   EXPECT_EQ(res.unwrap(), 10);
 }
 
 TEST(ResultTest, ErrValue) {
-  auto res = TestResult<int>::Err({"error"});
+  auto res = Err<int>({"error"});
   EXPECT_TRUE(res.is_err());
   EXPECT_EQ(res.unwrap_err().message, "error");
 }
 
 TEST(ResultTest, UnwrapOr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   EXPECT_EQ(res.unwrap_or(42), 42);
 }
 
 TEST(ResultTest, UnwrapOrElse) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   EXPECT_EQ(res.unwrap_or_else([]() { return 99; }), 99);
 }
 
 TEST(ResultTest, MoveSemantics) {
-  auto res = TestResult<std::string>::Ok("hello");
+  auto res = Ok<std::string>("hello");
   auto moved = std::move(res);
   EXPECT_TRUE(moved.is_ok());
   EXPECT_EQ(moved.unwrap(), "hello");
 }
 
 TEST(ResultTest, CopySemantics) {
-  auto res = TestResult<int>::Ok(5);
+  auto res = Ok<int>(5);
   auto copy = res;
   EXPECT_TRUE(copy.is_ok());
   EXPECT_EQ(copy.unwrap(), 5);
 }
 
 TEST(ResultTest, VoidOk) {
-  VoidResult res = VoidResult::Ok();
+  auto res = cpp_result::Ok<Error>();
   EXPECT_TRUE(res.is_ok());
   EXPECT_NO_THROW(res.unwrap());
 }
 
 TEST(ResultTest, VoidErr) {
-  VoidResult res = VoidResult::Err({"void error"});
+  auto res = cpp_result::Err<Error>({"void error"});
   EXPECT_TRUE(res.is_err());
   EXPECT_EQ(res.unwrap_err().message, "void error");
 }
 
 TEST(ResultTest, Map) {
-  auto res = TestResult<int>::Ok(2);
+  auto res = Ok<int>(2);
   auto mapped = res.map([](int v) { return v * 10; });
   EXPECT_TRUE(mapped.is_ok());
   EXPECT_EQ(mapped.unwrap(), 20);
-  auto err = TestResult<int>::Err({"fail"});
+  auto err = Err<int>({"fail"});
   auto mapped_err = err.map([](int v) { return v * 10; });
   EXPECT_TRUE(mapped_err.is_err());
   EXPECT_EQ(mapped_err.unwrap_err().message, "fail");
 }
 
 TEST(ResultTest, MapErr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   auto mapped =
       res.map_err([](const Error &e) { return Error{"mapped: " + e.message}; });
   EXPECT_TRUE(mapped.is_err());
   EXPECT_EQ(mapped.unwrap_err().message, "mapped: fail");
-  auto ok = TestResult<int>::Ok(1);
+  auto ok = Ok<int>(1);
   auto mapped_ok =
       ok.map_err([](const Error &) { return Error{"should not happen"}; });
   EXPECT_TRUE(mapped_ok.is_ok());
@@ -82,96 +88,95 @@ TEST(ResultTest, MapErr) {
 }
 
 TEST(ResultTest, AndThen) {
-  auto res = TestResult<int>::Ok(3);
-  auto chained = res.and_then(
-      [](int v) { return TestResult<std::string>::Ok(std::to_string(v)); });
+  auto res = Ok<int>(3);
+  auto chained =
+      res.and_then([](int v) { return Ok<std::string>(std::to_string(v)); });
   EXPECT_TRUE(chained.is_ok());
   EXPECT_EQ(chained.unwrap(), "3");
-  auto err = TestResult<int>::Err({"fail"});
-  auto chained_err = err.and_then(
-      [](int v) { return TestResult<std::string>::Ok(std::to_string(v)); });
+  auto err = Err<int>({"fail"});
+  auto chained_err =
+      err.and_then([](int v) { return Ok<std::string>(std::to_string(v)); });
   EXPECT_TRUE(chained_err.is_err());
   EXPECT_EQ(chained_err.unwrap_err().message, "fail");
 }
 
 TEST(ResultTest, VoidMap) {
-  VoidResult ok = VoidResult::Ok();
+  auto ok = cpp_result::Ok<Error>();
   auto mapped = ok.map([]() { return 42; });
   EXPECT_TRUE(mapped.is_ok());
   EXPECT_EQ(mapped.unwrap(), 42);
-  VoidResult err = VoidResult::Err({"void fail"});
+  auto err = cpp_result::Err<Error>({"void fail"});
   auto mapped_err = err.map([]() { return 42; });
   EXPECT_TRUE(mapped_err.is_err());
   EXPECT_EQ(mapped_err.unwrap_err().message, "void fail");
 }
 
 TEST(ResultTest, VoidMapErr) {
-  VoidResult err = VoidResult::Err({"void fail"});
+  auto err = cpp_result::Err<Error>({"void fail"});
   auto mapped = err.map_err(
       [](const Error &e) { return Error{"void mapped: " + e.message}; });
   EXPECT_TRUE(mapped.is_err());
   EXPECT_EQ(mapped.unwrap_err().message, "void mapped: void fail");
-  VoidResult ok = VoidResult::Ok();
+  auto ok = cpp_result::Ok<Error>();
   auto mapped_ok =
       ok.map_err([](const Error &) { return Error{"should not happen"}; });
   EXPECT_TRUE(mapped_ok.is_ok());
 }
 
 TEST(ResultTest, VoidAndThen) {
-  VoidResult ok = VoidResult::Ok();
-  auto chained =
-      ok.and_then([]() { return TestResult<std::string>::Ok("side effect"); });
+  auto ok = cpp_result::Ok<Error>();
+  auto chained = ok.and_then([]() { return Ok<std::string>("side effect"); });
   EXPECT_TRUE(chained.is_ok());
   EXPECT_EQ(chained.unwrap(), "side effect");
-  VoidResult err = VoidResult::Err({"void fail"});
+  auto err = cpp_result::Err<Error>({"void fail"});
   auto chained_err =
-      err.and_then([]() { return TestResult<std::string>::Ok("side effect"); });
+      err.and_then([]() { return Ok<std::string>("side effect"); });
   EXPECT_TRUE(chained_err.is_err());
   EXPECT_EQ(chained_err.unwrap_err().message, "void fail");
 }
 
 TEST(ResultTest, UnwrapDeathOnErr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   EXPECT_DEATH(res.unwrap(), "unwrap called on Result::Err()");
 }
 
 TEST(ResultTest, UnwrapErrDeathOnOk) {
-  auto res = TestResult<int>::Ok(123);
+  auto res = Ok<int>(123);
   EXPECT_DEATH(res.unwrap_err(), "unwrap_err called on Result::Ok()");
 }
 
 TEST(ResultTest, ExpectReturnsValueOnOk) {
-  auto res = TestResult<int>::Ok(42);
+  auto res = Ok<int>(42);
   EXPECT_EQ(res.expect("should not fail"), 42);
 }
 
 TEST(ResultTest, ExpectDeathOnErr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   EXPECT_DEATH(res.expect("custom error message"), "custom error message");
 }
 
 TEST(ResultTest, ExpectErrReturnsErrorOnErr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   EXPECT_EQ(res.expect_err("should not fail").message, "fail");
 }
 
 TEST(ResultTest, ExpectErrDeathOnOk) {
-  auto res = TestResult<int>::Ok(123);
+  auto res = Ok<int>(123);
   EXPECT_DEATH(res.expect_err("custom error message"), "custom error message");
 }
 
 TEST(ResultTest, VoidExpectDeathOnErr) {
-  VoidResult res = VoidResult::Err({"fail"});
+  auto res = cpp_result::Err<Error>({"fail"});
   EXPECT_DEATH(res.expect("void error"), "void error");
 }
 
 TEST(ResultTest, VoidExpectErrDeathOnOk) {
-  VoidResult res = VoidResult::Ok();
+  auto res = cpp_result::Ok<Error>();
   EXPECT_DEATH(res.expect_err("should fail"), "should fail");
 }
 
 TEST(ResultTest, InspectOk) {
-  auto res = TestResult<int>::Ok(42);
+  auto res = Ok<int>(42);
   int called = 0;
   res.inspect([&](const int &v) {
     EXPECT_EQ(v, 42);
@@ -181,14 +186,14 @@ TEST(ResultTest, InspectOk) {
 }
 
 TEST(ResultTest, InspectErrNoCall) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   int called = 0;
   res.inspect([&](const int &) { called = 1; });
   EXPECT_EQ(called, 0);
 }
 
 TEST(ResultTest, InspectErr) {
-  auto res = TestResult<int>::Err({"fail"});
+  auto res = Err<int>({"fail"});
   int called = 0;
   res.inspect_err([&](const Error &e) {
     EXPECT_EQ(e.message, "fail");
@@ -198,28 +203,28 @@ TEST(ResultTest, InspectErr) {
 }
 
 TEST(ResultTest, InspectOkNoCall) {
-  auto res = TestResult<int>::Ok(42);
+  auto res = Ok<int>(42);
   int called = 0;
   res.inspect_err([&](const Error &) { called = 1; });
   EXPECT_EQ(called, 0);
 }
 
 TEST(ResultTest, VoidInspectOk) {
-  VoidResult ok = VoidResult::Ok();
+  auto ok = cpp_result::Ok<Error>();
   int called = 0;
   ok.inspect([&]() { called = 1; });
   EXPECT_EQ(called, 1);
 }
 
 TEST(ResultTest, VoidInspectErrNoCall) {
-  VoidResult err = VoidResult::Err({"fail"});
+  auto err = cpp_result::Err<Error>({"fail"});
   int called = 0;
   err.inspect([&]() { called = 1; });
   EXPECT_EQ(called, 0);
 }
 
 TEST(ResultTest, VoidInspectErr) {
-  VoidResult err = VoidResult::Err({"fail"});
+  auto err = cpp_result::Err<Error>({"fail"});
   int called = 0;
   err.inspect_err([&](const Error &e) {
     EXPECT_EQ(e.message, "fail");
@@ -229,7 +234,7 @@ TEST(ResultTest, VoidInspectErr) {
 }
 
 TEST(ResultTest, VoidInspectOkNoCall) {
-  VoidResult ok = VoidResult::Ok();
+  auto ok = cpp_result::Ok<Error>();
   int called = 0;
   ok.inspect_err([&](const Error &) { called = 1; });
   EXPECT_EQ(called, 0);

@@ -1,18 +1,24 @@
-#include "../include/result.hpp"
 #include <iostream>
+#include <result.hpp>
 #include <string>
 
 struct Error {
   std::string message;
 };
 
-template <typename T> using MyResult = cpp_result::Result<T, Error>;
-using VoidResult = cpp_result::Result<void, Error>;
+template <typename T> using Result = cpp_result::Result<T, Error>;
 
-MyResult<int> divide(int a, int b) noexcept {
+template <typename T> inline Result<T> Ok(T value) {
+  return Result<T>::Ok(std::forward<T>(value));
+}
+template <typename T> inline Result<T> Err(Error err) {
+  return Result<T>::Err(std::move(err));
+}
+
+Result<int> divide(int a, int b) noexcept {
   if (b == 0)
-    return MyResult<int>::Err({"Division by zero"});
-  return MyResult<int>::Ok(a / b);
+    return Err<int>({"Division by zero"});
+  return Ok<int>(a / b);
 }
 
 int main() {
@@ -27,7 +33,6 @@ int main() {
               << result.expect_err("Should not fail").message << "\n";
   }
 
-  // Example: inspect and inspect_err
   result
       .inspect([](const int &v) {
         std::cout << "[inspect] Ok value: " << v << "\n";
@@ -51,7 +56,7 @@ int main() {
       [](const int &v) { std::cout << "[inspect] mapped Ok: " << v << "\n"; });
 
   auto chained = result.and_then(
-      [](int val) { return MyResult<std::string>::Ok(std::to_string(val)); });
+      [](int val) { return Ok<std::string>(std::to_string(val)); });
   if (chained.is_ok()) {
     std::cout << "Chained Result: " << chained.unwrap() << "\n";
     std::cout << "Chained Result (expect): "
@@ -66,8 +71,8 @@ int main() {
   int val = error_result.unwrap_or(42);
   std::cout << "Fallback result: " << val << "\n";
 
-  auto unwrapped = error_result.unwrap_or_else([]() {
-    return -1; // Custom fallback logic
+  auto unwrapped = error_result.unwrap_or_else([&val]() {
+    return val * 2; // Custom fallback logic
   });
   std::cout << "Unwrapped with fallback: " << unwrapped << "\n";
 
@@ -82,7 +87,7 @@ int main() {
     std::cout << "[inspect_err] mapped error: " << e.message << "\n";
   });
 
-  VoidResult void_ok = VoidResult::Ok();
+  auto void_ok = cpp_result::Ok<Error>();
   if (void_ok.is_ok()) {
     std::cout << "Void Ok: success!\n";
     void_ok.expect("Void should not fail");
@@ -90,7 +95,7 @@ int main() {
     std::cout << "Void Ok: error!\n";
   }
 
-  VoidResult void_err = VoidResult::Err({"Some void error"});
+  auto void_err = cpp_result::Err<Error>({"Some void error"});
   if (void_err.is_err())
     std::cout << "Void Err: " << void_err.unwrap_err().message << "\n";
 
@@ -103,8 +108,8 @@ int main() {
   if (void_map_err.is_err())
     std::cout << "Void map_err: " << void_map_err.unwrap_err().message << "\n";
 
-  auto void_and_then = void_ok.and_then(
-      []() { return MyResult<std::string>::Ok("side effect ok"); });
+  auto void_and_then =
+      void_ok.and_then([]() { return Ok<std::string>("side effect ok"); });
   if (void_and_then.is_ok())
     std::cout << "Void and_then Ok: " << void_and_then.unwrap() << "\n";
 }

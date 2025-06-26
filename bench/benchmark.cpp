@@ -10,7 +10,14 @@ struct Error {
   std::string message;
 };
 
-template <typename T> using MyResult = cpp_result::Result<T, Error>;
+template <typename T> using Result = cpp_result::Result<T, Error>;
+
+template <typename T> inline Result<T> Ok(T value) {
+  return Result<T>::Ok(std::forward<T>(value));
+}
+template <typename T> inline Result<T> Err(Error err) {
+  return Result<T>::Err(std::move(err));
+}
 
 double divide_exc(double a, double b) {
   if (b == 0.0)
@@ -25,10 +32,10 @@ bool divide_code(double a, double b, double &out) {
   return true;
 }
 
-MyResult<double> divide_result(double a, double b) {
+Result<double> divide_result(double a, double b) {
   if (b == 0.0)
-    return MyResult<double>::Err({"division by zero"});
-  return MyResult<double>::Ok(a / b);
+    return Err<double>({"division by zero"});
+  return Ok<double>(a / b);
 }
 
 class DivideFixture : public benchmark::Fixture {};

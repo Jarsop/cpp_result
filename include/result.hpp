@@ -301,4 +301,17 @@ private:
   }
 };
 
+template <typename T, typename E> inline Result<T, E> Ok(T val) {
+  return Result<T, E>::Ok(std::move(val));
+}
+template <typename T, typename E> inline Result<T, E> Err(E err) {
+  return Result<T, E>::Err(std::move(err));
+}
+template <typename E> inline Result<void, E> Ok() {
+  return Result<void, E>::Ok();
+}
+template <typename E> inline Result<void, E> Err(E err) {
+  return Result<void, E>::Err(std::move(err));
+}
+
 } // namespace cpp_result
