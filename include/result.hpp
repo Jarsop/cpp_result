@@ -58,6 +58,43 @@
 
 #pragma once
 
+#if defined(__GNUC__) || defined(__clang__)
+#define CPP_RESULT_HAS_STATEMENT_EXPR 1
+#else
+#define CPP_RESULT_HAS_STATEMENT_EXPR 0
+#endif
+
+#if CPP_RESULT_HAS_STATEMENT_EXPR
+
+#define TRY(expr)                                                              \
+  ({                                                                           \
+    auto &&__res = (expr);                                                     \
+    using __res_type = std::decay_t<decltype(__res)>;                          \
+    if (__res.is_err())                                                        \
+      return __res_type::Err(__res.unwrap_err());                              \
+    std::move(__res.unwrap());                                                 \
+  })
+
+#else
+
+#define TRY(expr)                                                              \
+  ([&]() -> decltype(auto) {                                                   \
+    auto &&__res = (expr);                                                     \
+    using __res_type = std::decay_t<decltype(__res)>;                          \
+    if (__res.is_err())                                                        \
+      return __res_type::Err(__res.unwrap_err());                              \
+    return std::move(__res.unwrap());                                          \
+  }())
+
+#endif
+
+#define TRYL(name, expr)                                                       \
+  auto &&__res_##name = (expr);                                                \
+  using __res_type_##name = std::decay_t<decltype(__res_##name)>;              \
+  if (__res_##name.is_err())                                                   \
+    return __res_type_##name::Err(__res_##name.unwrap_err());                  \
+  auto &name = __res_##name.unwrap()
+
 #include <cstdio>
 #include <cstdlib>
 #include <type_traits>

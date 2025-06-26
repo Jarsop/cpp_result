@@ -112,4 +112,6 @@ int main() {
       void_ok.and_then([]() { return Ok<std::string>("side effect ok"); });
   if (void_and_then.is_ok())
     std::cout << "Void and_then Ok: " << void_and_then.unwrap() << "\n";
+
+  return 0;
 }

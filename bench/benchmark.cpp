@@ -105,4 +105,6 @@ BENCHMARK_DEFINE_F(DivideFixture, Result)(benchmark::State &state) {
 BENCHMARK_REGISTER_F(DivideFixture, Result)
     ->ArgsProduct({{10000, 100000, 1000000}, {100, 1000, 10000}});
 
+// Benchmark for TRY macro and TRYL macro moved to bench/bench_try_macros.cpp
+
 BENCHMARK_MAIN();
