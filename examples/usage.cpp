@@ -27,6 +27,15 @@ int main() {
               << result.expect_err("Should not fail").message << "\n";
   }
 
+  // Example: inspect and inspect_err
+  result
+      .inspect([](const int &v) {
+        std::cout << "[inspect] Ok value: " << v << "\n";
+      })
+      .inspect_err([](const Error &e) {
+        std::cout << "[inspect_err] Error: " << e.message << "\n";
+      });
+
   auto mapped = result.map([](int val) { return val * 2; });
   if (mapped.is_ok()) {
     std::cout << "Mapped Result: " << mapped.unwrap() << "\n";
@@ -37,6 +46,9 @@ int main() {
     std::cout << "Mapped Error (expect_err): "
               << mapped.expect_err("Should not fail").message << "\n";
   }
+
+  mapped.inspect(
+      [](const int &v) { std::cout << "[inspect] mapped Ok: " << v << "\n"; });
 
   auto chained = result.and_then(
       [](int val) { return MyResult<std::string>::Ok(std::to_string(val)); });
@@ -65,6 +77,10 @@ int main() {
     std::cout << "Mapped Error: " << mapped_err.unwrap_err().message << "\n";
   else
     std::cout << "Mapped Result: " << mapped_err.unwrap() << "\n";
+
+  error_result.inspect_err([](const Error &e) {
+    std::cout << "[inspect_err] mapped error: " << e.message << "\n";
+  });
 
   VoidResult void_ok = VoidResult::Ok();
   if (void_ok.is_ok()) {

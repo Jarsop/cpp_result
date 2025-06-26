@@ -169,3 +169,68 @@ TEST(ResultTest, VoidExpectErrDeathOnOk) {
   VoidResult res = VoidResult::Ok();
   EXPECT_DEATH(res.expect_err("should fail"), "should fail");
 }
+
+TEST(ResultTest, InspectOk) {
+  auto res = TestResult<int>::Ok(42);
+  int called = 0;
+  res.inspect([&](const int &v) {
+    EXPECT_EQ(v, 42);
+    called = 1;
+  });
+  EXPECT_EQ(called, 1);
+}
+
+TEST(ResultTest, InspectErrNoCall) {
+  auto res = TestResult<int>::Err({"fail"});
+  int called = 0;
+  res.inspect([&](const int &) { called = 1; });
+  EXPECT_EQ(called, 0);
+}
+
+TEST(ResultTest, InspectErr) {
+  auto res = TestResult<int>::Err({"fail"});
+  int called = 0;
+  res.inspect_err([&](const Error &e) {
+    EXPECT_EQ(e.message, "fail");
+    called = 1;
+  });
+  EXPECT_EQ(called, 1);
+}
+
+TEST(ResultTest, InspectOkNoCall) {
+  auto res = TestResult<int>::Ok(42);
+  int called = 0;
+  res.inspect_err([&](const Error &) { called = 1; });
+  EXPECT_EQ(called, 0);
+}
+
+TEST(ResultTest, VoidInspectOk) {
+  VoidResult ok = VoidResult::Ok();
+  int called = 0;
+  ok.inspect([&]() { called = 1; });
+  EXPECT_EQ(called, 1);
+}
+
+TEST(ResultTest, VoidInspectErrNoCall) {
+  VoidResult err = VoidResult::Err({"fail"});
+  int called = 0;
+  err.inspect([&]() { called = 1; });
+  EXPECT_EQ(called, 0);
+}
+
+TEST(ResultTest, VoidInspectErr) {
+  VoidResult err = VoidResult::Err({"fail"});
+  int called = 0;
+  err.inspect_err([&](const Error &e) {
+    EXPECT_EQ(e.message, "fail");
+    called = 1;
+  });
+  EXPECT_EQ(called, 1);
+}
+
+TEST(ResultTest, VoidInspectOkNoCall) {
+  VoidResult ok = VoidResult::Ok();
+  int called = 0;
+  ok.inspect_err([&](const Error &) { called = 1; });
+  EXPECT_EQ(called, 0);
+}

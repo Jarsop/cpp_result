@@ -96,6 +96,22 @@ public:
     return data_.error;
   }
 
+  template <typename F>
+  const Result &inspect(F &&func) const
+      noexcept(noexcept(func(std::declval<const T &>()))) {
+    if (is_ok_)
+      func(data_.value);
+    return *this;
+  }
+
+  template <typename F>
+  const Result &inspect_err(F &&func) const
+      noexcept(noexcept(func(std::declval<const E &>()))) {
+    if (!is_ok_)
+      func(data_.error);
+    return *this;
+  }
+
   ~Result() { destroy(); }
 
   // Move semantics
@@ -224,6 +240,21 @@ public:
   const E &expect_err(const char msg[]) const noexcept {
     EXPECT_OR_ABORT(!is_ok_, msg);
     return error_;
+  }
+
+  template <typename F>
+  const Result &inspect(F &&func) const noexcept(noexcept(func())) {
+    if (is_ok_)
+      func();
+    return *this;
+  }
+
+  template <typename F>
+  const Result &inspect_err(F &&func) const
+      noexcept(noexcept(func(std::declval<const E &>()))) {
+    if (!is_ok_)
+      func(error_);
+    return *this;
   }
 
   // Move semantics
