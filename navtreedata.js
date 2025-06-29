@@ -26,6 +26,7 @@ var NAVTREE =
 [
   [ "cpp_result", "index.html", [
     [ "Feature Control", "index.html#features", null ],
+    [ "Macros: TRY and TRYL", "index.html#macros", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

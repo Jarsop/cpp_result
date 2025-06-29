@@ -10,7 +10,6 @@ var result_8hpp =
     [ "CPP_RESULT_FEATURE_MAP", "result_8hpp.html#a4eb3ea0de320dbb9c616ef9016f80365", null ],
     [ "CPP_RESULT_FEATURE_OPTIONAL", "result_8hpp.html#a4d212021804c2a16b3c4951346710968", null ],
     [ "CPP_RESULT_FEATURE_UNWRAP", "result_8hpp.html#a51a59c6423079370d5d7d7a262ac3590", null ],
-    [ "CPP_RESULT_HAS_STATEMENT_EXPR", "result_8hpp.html#a1d9ae2ad8f27cb4ceff47146f0240eb6", null ],
     [ "EXPECT_OR_ABORT", "result_8hpp.html#ab43fba1ff9c05c2d0a88d10b4c0e7464", null ],
     [ "TRY", "result_8hpp.html#ac7041a9a9bc7a8547bb9995fd82a1ad7", null ],
     [ "TRYL", "result_8hpp.html#aadc944e6d1cf3b86f1361b794f56a63c", null ],
