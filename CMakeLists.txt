@@ -42,6 +42,7 @@ find_package(benchmark)
 find_package(Doxygen)
 
 add_executable(usage examples/usage.cpp)
+add_executable(advanced examples/advanced.cpp)
 add_executable(result_tests tests/result_tests.cpp)
 add_executable(bench_exc_errorcode_result bench/benchmark.cpp)
 add_executable(bench_try_macros bench/bench_try_macros.cpp)

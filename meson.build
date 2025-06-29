@@ -43,6 +43,7 @@ add_project_arguments(cpp_result_defines, language: 'cpp')
 inc = include_directories('include')
 
 executable('usage', 'examples/usage.cpp', include_directories: inc)
+executable('advanced', 'examples/advanced.cpp', include_directories: inc)
 
 test_exe = executable(
     'result_tests',

@@ -2,7 +2,7 @@
 
 This header-only library provides a minimal and efficient Rust-like `Result<T, E>` for C++17. It has no dependencies and offers a simple, ergonomic API inspired by Rust.
 
-See [`examples/usage.cpp`](examples/usage.cpp) or [documentation](https://jarsop.github.io/cpp_result) for full usages.
+See [`examples`](examples/) or [documentation](https://jarsop.github.io/cpp_result) for full usages.
 
 ## Building
 
