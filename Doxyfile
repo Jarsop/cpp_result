@@ -1532,7 +1532,7 @@ WARN_LOGFILE           =
 
 # Note: If this tag is empty the current directory is searched
 
-INPUT                  = $(WORKING_ROOT)include
+INPUT                  = include
 
 # This tag can be used to specify the character encoding of the source files
 
@@ -1716,7 +1716,7 @@ EXCLUDE_SYMBOLS        =
 
 # command)
 
-EXAMPLE_PATH           = $(WORKING_ROOT)examples/
+EXAMPLE_PATH           = examples/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 
@@ -2110,7 +2110,7 @@ HTML_FILE_EXTENSION    = .html
 
 # This tag requires that the tag GENERATE_HTML is set to YES
 
-HTML_HEADER            =
+HTML_HEADER            = docs/header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 
@@ -2178,9 +2178,9 @@ HTML_STYLESHEET        =
 
 # This tag requires that the tag GENERATE_HTML is set to YES
 
-HTML_EXTRA_STYLESHEET  = $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome.css \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css \
+HTML_EXTRA_STYLESHEET  = docs/doxygen-awesome-css/doxygen-awesome.css \
+                         docs/doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
+                         docs/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css \
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 
@@ -2196,11 +2196,11 @@ HTML_EXTRA_STYLESHEET  = $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome
 
 # This tag requires that the tag GENERATE_HTML is set to YES
 
-HTML_EXTRA_FILES       = $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         $(WORKING_ROOT)docs/doxygen-awesome-css/doxygen-awesome-tabs.js
+HTML_EXTRA_FILES       = docs/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
+                         docs/doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js \
+                         docs/doxygen-awesome-css/doxygen-awesome-interactive-toc.js \
+                         docs/doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
+                         docs/doxygen-awesome-css/doxygen-awesome-tabs.js
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
 

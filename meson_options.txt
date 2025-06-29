@@ -1,0 +1,48 @@
+option(
+    'result_feature_all',
+    type: 'boolean',
+    value: true,
+    description: 'Enable all cpp_result features',
+)
+option(
+    'result_feature_unwrap',
+    type: 'boolean',
+    value: true,
+    description: 'Enable unwrap group',
+)
+option(
+    'result_feature_map',
+    type: 'boolean',
+    value: true,
+    description: 'Enable map group',
+)
+option(
+    'result_feature_andor',
+    type: 'boolean',
+    value: true,
+    description: 'Enable and/or group',
+)
+option(
+    'result_feature_inspect',
+    type: 'boolean',
+    value: true,
+    description: 'Enable inspect group',
+)
+option(
+    'result_feature_contains',
+    type: 'boolean',
+    value: true,
+    description: 'Enable contains group',
+)
+option(
+    'result_feature_flatten',
+    type: 'boolean',
+    value: true,
+    description: 'Enable flatten group',
+)
+option(
+    'result_feature_optional',
+    type: 'boolean',
+    value: true,
+    description: 'Enable optional group',
+)

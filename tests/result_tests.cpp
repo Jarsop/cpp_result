@@ -5,6 +5,8 @@
 struct Error {
   std::string message;
   bool operator==(const Error &other) const { return message == other.message; }
+  Error() = default;
+  Error(std::string msg) : message(msg) {}
 };
 
 template <typename T> using Result = cpp_result::Result<T, Error>;
@@ -350,4 +352,68 @@ TEST(ResultTest, Flatten) {
   EXPECT_EQ(flat2.unwrap_err(), "fail");
   EXPECT_TRUE(flat3.is_err());
   EXPECT_EQ(flat3.unwrap_err(), "outer fail");
+
+  auto void_inner = cpp_result::Ok<Error>();
+  auto void_outer =
+      cpp_result::Result<cpp_result::Result<void, Error>, std::string>::Ok(
+          void_inner);
+  auto void_flat = void_outer.flatten();
+  EXPECT_TRUE(void_flat.is_ok());
+  EXPECT_EXIT(
+      {
+        void_flat.unwrap();
+        fprintf(stderr, "Still alive!");
+        exit(0);
+      },
+      ::testing::ExitedWithCode(0), "Still alive!");
+}
+
+TEST(ResultTest, VoidIsErrAnd) {
+  auto ok = cpp_result::Ok<Error>();
+  auto err = cpp_result::Err<Error>({"fail"});
+  EXPECT_FALSE(ok.is_err_and([](const Error &) { return true; }));
+  EXPECT_TRUE(
+      err.is_err_and([](const Error &e) { return e.message == "fail"; }));
+  EXPECT_FALSE(
+      err.is_err_and([](const Error &e) { return e.message == "nope"; }));
+}
+
+TEST(ResultTest, VoidErrOption) {
+  auto ok = cpp_result::Ok<Error>();
+  auto err = cpp_result::Err<Error>({"fail"});
+  EXPECT_FALSE(ok.err().has_value());
+  EXPECT_TRUE(err.err().has_value());
+  EXPECT_EQ(err.err()->message, "fail");
+}
+
+TEST(ResultTest, VoidAndOr) {
+  auto ok = cpp_result::Ok<Error>();
+  auto err = cpp_result::Err<Error>({"fail"});
+  auto out1 = ok.and_(err);
+  EXPECT_TRUE(out1.is_err());
+  EXPECT_EQ(out1.unwrap_err().message, "fail");
+  auto out2 = err.and_(ok);
+  EXPECT_TRUE(out2.is_err());
+  EXPECT_EQ(out2.unwrap_err().message, "fail");
+  auto out3 = err.or_(ok);
+  EXPECT_TRUE(out3.is_ok());
+  auto out4 = ok.or_(err);
+  EXPECT_TRUE(out4.is_ok());
+}
+
+TEST(ResultTest, VoidMapOr_MapOrElse) {
+  auto ok = cpp_result::Ok<Error>();
+  auto err = cpp_result::Err<Error>({"fail"});
+  EXPECT_EQ(ok.map_or(0, [] { return 42; }), 42);
+  EXPECT_EQ(err.map_or(0, [] { return 42; }), 0);
+  EXPECT_EQ(ok.map_or_else([] { return 0; }, [] { return 42; }), 42);
+  EXPECT_EQ(err.map_or_else([] { return 0; }, [] { return 42; }), 0);
+}
+
+TEST(ResultTest, VoidContainsErr) {
+  auto err = cpp_result::Err<Error>({"fail"});
+  auto ok = cpp_result::Ok<Error>();
+  EXPECT_TRUE(err.contains_err(Error{"fail"}));
+  EXPECT_FALSE(err.contains_err(Error{"nope"}));
+  EXPECT_FALSE(ok.contains_err(Error{"fail"}));
 }
