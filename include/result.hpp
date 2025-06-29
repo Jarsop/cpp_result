@@ -1,3 +1,4 @@
+// clang-format off
 /**
  * @mainpage cpp_result
  * @brief Modern Rust-like Result<T, E> for C++17.
@@ -62,8 +63,42 @@
  * If you use CMake or Meson, options are provided to control these features.
  *
  * @see README.md for more details.
+ *
+ * @section macros Macros: TRY and TRYL
+ *
+ * cpp_result provides two macros to simplify error propagation in functions
+ * returning Result types:
+ *
+ * - `TRY(expr)`: Evaluates `expr` (which must return a Result). If it is an
+ * error, returns the error from the current function. Otherwise, yields the
+ * value.
+ * - `TRYL(name, expr)`: Like TRY, but binds the unwrapped value to the variable
+ * `name`.
+ *
+ * These macros mimic Rust's `?` operator for early returns on error.
+ *
+ * Example usage:
+ * @code
+ * using cpp_result::Result;
+ * using cpp_result::Ok;
+ *
+ * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
+ *   int x = TRY(parse_int(a));
+ *   int y = TRY(parse_int(b));
+ *   return Ok<int, std::string>(x + y);
+ * }
+ *
+ * // With TRYL:
+ * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
+ *   TRYL(x, parse_int(a));
+ *   TRYL(y, parse_int(b));
+ *   return Ok<int, std::string>(x + y);
+ * }
+ * @endcode
+ *
+ * @note These macros require the function to return a compatible Result type.
  */
-
+// clang-format on
 // result.hpp - Rust-like Result<T, E> for C++17
 // SPDX-License-Identifier: MIT
 //
@@ -132,18 +167,27 @@
 #define CPP_RESULT_FEATURE_OPTIONAL CPP_RESULT_FEATURE_ALL
 #endif
 
-// --- API Feature Groups ---
-// - Construction & Query: always enabled
-// - Unwrap group: unwrap, unwrap_err, unwrap_or, unwrap_or_else,
-//                 unwrap_or_default, expect, expect_err
-// - Map group: map, map_err, map_or, map_or_else
-// - And/Or group: and_, and_then, or_, or_else
-// - Inspect group: inspect, inspect_err
-// - Contains group: contains, contains_err
-// - Flatten group: flatten
-
+/**
+ * @def TRY(expr)
+ * @brief Propagate errors like Rust's `?` operator.
+ *
+ * Evaluates `expr` (which must return a Result). If it is an error, returns the
+ * error from the current function. Otherwise, yields the value.
+ *
+ * @note This implementation is less optimal if your compiler does not support
+ * statement expressions. It uses a lambda, which may result in less efficient
+ * code and different scoping rules.
+ * @see Source code for the macro definition.
+ *
+ * Example:
+ * @code
+ * Result<int, std::string> parse_and_add(const std::string& a, const
+ * std::string& b) { int x = TRY(parse_int(a)); int y = TRY(parse_int(b));
+ *   return Ok<int, std::string>(x + y);
+ * }
+ * @endcode
+ */
 #if CPP_RESULT_HAS_STATEMENT_EXPR
-
 #define TRY(expr)                                                              \
   ({                                                                           \
     auto &&__res = (expr);                                                     \
@@ -152,9 +196,7 @@
       return __res_type::Err(__res.unwrap_err());                              \
     std::move(__res.unwrap());                                                 \
   })
-
 #else
-
 #define TRY(expr)                                                              \
   ([&]() -> decltype(auto) {                                                   \
     auto &&__res = (expr);                                                     \
@@ -163,9 +205,27 @@
       return __res_type::Err(__res.unwrap_err());                              \
     return std::move(__res.unwrap());                                          \
   }())
-
 #endif
 
+// clang-format off
+/**
+ * @def TRYL(name, expr)
+ * @brief Propagate errors and bind the value to a variable.
+ *
+ * Evaluates `expr` (which must return a Result). If it is an error, returns the
+ * error from the current function. Otherwise, binds the unwrapped value to the
+ * variable `name`.
+ *
+ * Example:
+ * @code
+ * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
+ *   TRYL(x, parse_int(a));
+ *   TRYL(y, parse_int(b));
+ *   return Ok<int, std::string>(x + y);
+ * }
+ * @endcode
+ */
+// clang-format on
 #define TRYL(name, expr)                                                       \
   auto &&__res_##name = (expr);                                                \
   using __res_type_##name = std::decay_t<decltype(__res_##name)>;              \
