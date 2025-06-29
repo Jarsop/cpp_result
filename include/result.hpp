@@ -97,6 +97,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -236,6 +237,24 @@ public:
   }
 
   /**
+   * @brief Returns the value if Ok, else returns a default-constructed value.
+   *        Requires T to be default-constructible.
+   * @code
+   * using MyResult = cpp_result::Result<int, std::string>;
+   * auto r1 = MyResult::Ok(42);
+   * int v1 = r1.unwrap_or_default(); // v1 == 42
+   * auto r2 = MyResult::Err("fail");
+   * int v2 = r2.unwrap_or_default(); // v2 == 0
+   * @endcode
+   */
+  T unwrap_or_default() const
+      noexcept(std::is_nothrow_default_constructible_v<T>) {
+    if (is_ok_)
+      return data_.value;
+    return T{};
+  }
+
+  /**
    * @brief Maps the value if Ok, else propagates Err.
    * @code
    * using MyResult = cpp_result::Result<int, std::string>;
@@ -349,6 +368,164 @@ public:
     if (!is_ok_)
       func(data_.error);
     return *this;
+  }
+
+  /**
+   * @brief Returns true if the result is Ok and the predicate returns true for
+   * the value.
+   * @code
+   * auto r = MyResult::Ok(42);
+   * bool b = r.is_ok_and([](int v){ return v > 0; }); // true
+   * @endcode
+   */
+  template <typename Pred>
+  bool is_ok_and(Pred &&pred) const
+      noexcept(noexcept(pred(std::declval<T>()))) {
+    return is_ok_ && pred(data_.value);
+  }
+
+  /**
+   * @brief Returns true if the result is Err and the predicate returns true for
+   * the error.
+   * @code
+   * auto r = MyResult::Err("fail");
+   * bool b = r.is_err_and([](const std::string& e){ return e == "fail"; }); //
+   * true
+   * @endcode
+   */
+  template <typename Pred>
+  bool is_err_and(Pred &&pred) const
+      noexcept(noexcept(pred(std::declval<E>()))) {
+    return !is_ok_ && pred(data_.error);
+  }
+
+  /**
+   * @brief Converts the Result into a std::optional<T> (Ok value or
+   * std::nullopt).
+   * @code
+   * auto r = MyResult::Ok(42);
+   * std::optional<int> opt = r.ok(); // opt == 42
+   * @endcode
+   */
+  std::optional<T> ok() const {
+    if (is_ok_)
+      return data_.value;
+    return std::nullopt;
+  }
+
+  /**
+   * @brief Converts the Result into a std::optional<E> (Err value or
+   * std::nullopt).
+   * @code
+   * auto r = MyResult::Err("fail");
+   * std::optional<std::string> opt = r.err(); // opt == "fail"
+   * @endcode
+   */
+  std::optional<E> err() const {
+    if (!is_ok_)
+      return data_.error;
+    return std::nullopt;
+  }
+
+  /**
+   * @brief Returns res if the result is Ok, otherwise returns self.
+   * @code
+   * auto r1 = MyResult::Ok(1);
+   * auto r2 = MyResult::Ok(2);
+   * auto out = r1.and_(r2); // out == r2
+   * @endcode
+   */
+  template <typename R2> auto and_(R2 &&res) const {
+    if (is_ok_)
+      return std::forward<R2>(res);
+    return Result<T, E>::Err(data_.error);
+  }
+
+  /**
+   * @brief Returns res if the result is Err, otherwise returns self.
+   * @code
+   * auto r1 = MyResult::Err("fail");
+   * auto r2 = MyResult::Ok(2);
+   * auto out = r1.or_(r2); // out == r2
+   * @endcode
+   */
+  template <typename R2> auto or_(R2 &&res) const {
+    if (!is_ok_)
+      return std::forward<R2>(res);
+    return *this;
+  }
+
+  /**
+   * @brief Calls op if the result is Err, otherwise returns self.
+   * @code
+   * auto r = MyResult::Err("fail");
+   * auto out = r.or_else([]{ return MyResult::Ok(123); });
+   * @endcode
+   */
+  template <typename F> auto or_else(F &&op) const {
+    if (!is_ok_)
+      return op();
+    return *this;
+  }
+
+  /**
+   * @brief Applies a function to the value if Ok, else returns default_value.
+   * @code
+   * auto r = MyResult::Ok(21);
+   * int v = r.map_or(0, [](int v){ return v*2; }); // v == 42
+   * @endcode
+   */
+  template <typename U, typename F> U map_or(U default_value, F &&func) const {
+    return is_ok_ ? func(data_.value) : default_value;
+  }
+
+  /**
+   * @brief Applies a function to the value if Ok, else computes a default with
+   * another function.
+   * @code
+   * auto r = MyResult::Err("fail");
+   * int v = r.map_or_else([]{ return 0; }, [](int v){ return v*2; }); // v == 0
+   * @endcode
+   */
+  template <typename D, typename F>
+  auto map_or_else(D &&default_fn, F &&func) const {
+    return is_ok_ ? func(data_.value) : default_fn();
+  }
+
+  /**
+   * @brief Returns true if the result is Ok and contains the given value.
+   * @code
+   * auto r = MyResult::Ok(42);
+   * bool b = r.contains(42); // true
+   * @endcode
+   */
+  bool contains(const T &value) const { return is_ok_ && data_.value == value; }
+
+  /**
+   * @brief Returns true if the result is Err and contains the given error.
+   * @code
+   * auto r = MyResult::Err("fail");
+   * bool b = r.contains_err("fail"); // true
+   * @endcode
+   */
+  bool contains_err(const E &error) const {
+    return !is_ok_ && data_.error == error;
+  }
+
+  /**
+   * @brief Flattens a Result<Result<U, E>, E> into Result<U, E>.
+   * @code
+   * cpp_result::Result<cpp_result::Result<int, std::string>, std::string> r =
+   *   cpp_result::Ok<cpp_result::Result<int, std::string>,
+   * std::string>(cpp_result::Ok<int, std::string>(42)); auto flat =
+   * r.flatten(); // flat is Result<int, std::string>
+   * @endcode
+   */
+  auto flatten() const {
+    using Inner = decltype(data_.value);
+    if (is_ok_)
+      return data_.value;
+    return Inner::Err(data_.error);
   }
 
   ~Result() { destroy(); }

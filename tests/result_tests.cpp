@@ -4,6 +4,7 @@
 
 struct Error {
   std::string message;
+  bool operator==(const Error &other) const { return message == other.message; }
 };
 
 template <typename T> using Result = cpp_result::Result<T, Error>;
@@ -238,4 +239,115 @@ TEST(ResultTest, VoidInspectOkNoCall) {
   int called = 0;
   ok.inspect_err([&](const Error &) { called = 1; });
   EXPECT_EQ(called, 0);
+}
+
+TEST(ResultTest, UnwrapOrDefault) {
+  using MyResult = cpp_result::Result<int, std::string>;
+  MyResult ok = MyResult::Ok(42);
+  MyResult err = MyResult::Err("fail");
+  EXPECT_EQ(ok.unwrap_or_default(), 42);
+  EXPECT_EQ(err.unwrap_or_default(), 0); // int default
+
+  struct Dummy {
+    int x = 123;
+    Dummy() = default;
+    Dummy(int v) : x(v) {}
+    bool operator==(const Dummy &other) const { return x == other.x; }
+  };
+  cpp_result::Result<Dummy, std::string> ok2 =
+      cpp_result::Ok<Dummy, std::string>(Dummy(7));
+  cpp_result::Result<Dummy, std::string> err2 =
+      cpp_result::Err<Dummy, std::string>("fail");
+  EXPECT_EQ(ok2.unwrap_or_default(), Dummy(7));
+  EXPECT_EQ(err2.unwrap_or_default(), Dummy());
+}
+
+TEST(ResultTest, IsOkAnd_IsErrAnd) {
+  auto ok = Ok<int>(42);
+  auto err = Err<int>({"fail"});
+  EXPECT_TRUE(ok.is_ok_and([](int v) { return v == 42; }));
+  EXPECT_FALSE(ok.is_ok_and([](int v) { return v == 0; }));
+  EXPECT_FALSE(err.is_ok_and([](int) { return true; }));
+  EXPECT_TRUE(
+      err.is_err_and([](const Error &e) { return e.message == "fail"; }));
+  EXPECT_FALSE(
+      err.is_err_and([](const Error &e) { return e.message == "nope"; }));
+  EXPECT_FALSE(ok.is_err_and([](const Error &) { return true; }));
+}
+
+TEST(ResultTest, OkErrOption) {
+  auto ok = Ok<int>(42);
+  auto err = Err<int>({"fail"});
+  EXPECT_TRUE(ok.ok().has_value());
+  EXPECT_EQ(ok.ok().value(), 42);
+  EXPECT_FALSE(err.ok().has_value());
+  EXPECT_TRUE(err.err().has_value());
+  EXPECT_EQ(err.err()->message, "fail");
+  EXPECT_FALSE(ok.err().has_value());
+}
+
+TEST(ResultTest, AndOr) {
+  auto ok1 = Ok<int>(1);
+  auto ok2 = Ok<int>(2);
+  auto err1 = Err<int>({"fail"});
+  auto out1 = ok1.and_(ok2);
+  EXPECT_TRUE(out1.is_ok());
+  EXPECT_EQ(out1.unwrap(), 2);
+  auto out2 = err1.and_(ok2);
+  EXPECT_TRUE(out2.is_err());
+  EXPECT_EQ(out2.unwrap_err().message, "fail");
+  auto out3 = err1.or_(ok2);
+  EXPECT_TRUE(out3.is_ok());
+  EXPECT_EQ(out3.unwrap(), 2);
+  auto out4 = ok1.or_(ok2);
+  EXPECT_TRUE(out4.is_ok());
+  EXPECT_EQ(out4.unwrap(), 1);
+}
+
+TEST(ResultTest, OrElse) {
+  auto err = Err<int>({"fail"});
+  auto ok = Ok<int>(42);
+  auto out = err.or_else([] { return Ok<int>(123); });
+  EXPECT_TRUE(out.is_ok());
+  EXPECT_EQ(out.unwrap(), 123);
+  auto out2 = ok.or_else([] { return Ok<int>(0); });
+  EXPECT_TRUE(out2.is_ok());
+  EXPECT_EQ(out2.unwrap(), 42);
+}
+
+TEST(ResultTest, MapOr_MapOrElse) {
+  auto ok = Ok<int>(21);
+  auto err = Err<int>({"fail"});
+  EXPECT_EQ(ok.map_or(0, [](int v) { return v * 2; }), 42);
+  EXPECT_EQ(err.map_or(0, [](int v) { return v * 2; }), 0);
+  EXPECT_EQ(ok.map_or_else([] { return 0; }, [](int v) { return v * 2; }), 42);
+  EXPECT_EQ(err.map_or_else([] { return 0; }, [](int v) { return v * 2; }), 0);
+}
+
+TEST(ResultTest, Contains_ContainsErr) {
+  auto ok = Ok<int>(42);
+  auto err = Err<int>({"fail"});
+  EXPECT_TRUE(ok.contains(42));
+  EXPECT_FALSE(ok.contains(0));
+  EXPECT_FALSE(err.contains(42));
+  EXPECT_TRUE(err.contains_err(Error{"fail"}));
+  EXPECT_FALSE(err.contains_err(Error{"nope"}));
+  EXPECT_FALSE(ok.contains_err(Error{"fail"}));
+}
+
+TEST(ResultTest, Flatten) {
+  using Inner = cpp_result::Result<int, std::string>;
+  using Outer = cpp_result::Result<Inner, std::string>;
+  Outer okok = Outer::Ok(Inner::Ok(42));
+  Outer okerr = Outer::Ok(Inner::Err("fail"));
+  Outer err = Outer::Err("outer fail");
+  auto flat1 = okok.flatten();
+  auto flat2 = okerr.flatten();
+  auto flat3 = err.flatten();
+  EXPECT_TRUE(flat1.is_ok());
+  EXPECT_EQ(flat1.unwrap(), 42);
+  EXPECT_TRUE(flat2.is_err());
+  EXPECT_EQ(flat2.unwrap_err(), "fail");
+  EXPECT_TRUE(flat3.is_err());
+  EXPECT_EQ(flat3.unwrap_err(), "outer fail");
 }
