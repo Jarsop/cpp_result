@@ -97,6 +97,12 @@
  * @endcode
  *
  * @note These macros require the function to return a compatible Result type.
+ * 
+ * @section limitations Known Limitations
+ * 
+ * - The `TRY` macro requires your compiler to support statement expressions.
+ * - `T` and `E` must not be reference types.
+ * - `T` and `E` must not be same types. 
  */
 // result.hpp - Rust-like Result<T, E> for C++17
 // SPDX-License-Identifier: MIT

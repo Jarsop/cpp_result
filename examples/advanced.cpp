@@ -35,6 +35,12 @@ Result parse_div_and_double(const std::string &a, const std::string &b) {
       .map([y](int v) { return v + y; });
 }
 
+cpp_result::Result<int, int> test_ok_err_int(int value) {
+  if (value < 0)
+    return cpp_result::Err<int, int>(value);
+  return cpp_result::Ok<int, int>(value * 2);
+}
+
 int main() {
   for (auto &&[a, b] : {std::pair{"40", "2"}, std::pair{"18", "2"},
                         std::pair{"abc", "2"}, std::pair{"10", "0"}}) {
@@ -46,5 +52,11 @@ int main() {
           std::cout << "Error for (" << a << ", " << b << "): " << e << "\n";
         });
   }
+  test_ok_err_int(5)
+      .inspect([](int v) { std::cout << "Ok value: " << v << "\n"; })
+      .inspect_err([](int e) { std::cout << "Err value: " << e << "\n"; });
+  test_ok_err_int(-3)
+      .inspect([](int v) { std::cout << "Ok value: " << v << "\n"; })
+      .inspect_err([](int e) { std::cout << "Err value: " << e << "\n"; });
   return 0;
 }
