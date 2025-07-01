@@ -47,8 +47,8 @@ static void BM_TRY(benchmark::State &state) {
 }
 BENCHMARK(BM_TRY)->ArgsProduct({{10000, 100000, 1000000}, {100, 1000, 10000}});
 
-// Benchmark for TRYL macro
-static void BM_TRYL(benchmark::State &state) {
+// Benchmark for TRY_ASSIGN macro
+static void BM_TRY_ASSIGN(benchmark::State &state) {
   int N = state.range(0);
   int ERR_EVERY = state.range(1);
   for (auto _ : state) {
@@ -56,7 +56,7 @@ static void BM_TRYL(benchmark::State &state) {
     double sum = 0;
     for (int i = 1; i <= N; ++i) {
       auto fn = [&]() -> Result<double> {
-        TRYL(val, divide_result(i, (i % ERR_EVERY == 0) ? 0.0 : 2.0));
+        TRY_ASSIGN(val, divide_result(i, (i % ERR_EVERY == 0) ? 0.0 : 2.0));
         return Ok<double>(val);
       };
       auto res = fn();
@@ -71,6 +71,7 @@ static void BM_TRYL(benchmark::State &state) {
     state.counters["errors"] = errors;
   }
 }
-BENCHMARK(BM_TRYL)->ArgsProduct({{10000, 100000, 1000000}, {100, 1000, 10000}});
+BENCHMARK(BM_TRY_ASSIGN)
+    ->ArgsProduct({{10000, 100000, 1000000}, {100, 1000, 10000}});
 
 BENCHMARK_MAIN();

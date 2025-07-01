@@ -64,7 +64,7 @@
  *
  * @see README.md for more details.
  *
- * @section macros Macros: TRY and TRYL
+ * @section macros Macros: TRY and TRY_ASSIGN
  *
  * cpp_result provides two macros to simplify error propagation in functions
  * returning Result types:
@@ -72,7 +72,7 @@
  * - `TRY(expr)`: Evaluates `expr` (which must return a Result). If it is an
  * error, returns the error from the current function. Otherwise, yields the
  * value.
- * - `TRYL(name, expr)`: Like TRY, but binds the unwrapped value to the variable
+ * - `TRY_ASSIGN(name, expr)`: Like TRY, but binds the unwrapped value to the variable
  * `name`.
  *
  * These macros mimic Rust's `?` operator for early returns on error.
@@ -88,17 +88,16 @@
  *   return Ok<int, std::string>(x + y);
  * }
  *
- * // With TRYL:
+ * // With TRY_ASSIGN:
  * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
- *   TRYL(x, parse_int(a));
- *   TRYL(y, parse_int(b));
+ *   TRY_ASSIGN(x, parse_int(a));
+ *   TRY_ASSIGN(y, parse_int(b));
  *   return Ok<int, std::string>(x + y);
  * }
  * @endcode
  *
  * @note These macros require the function to return a compatible Result type.
  */
-// clang-format on
 // result.hpp - Rust-like Result<T, E> for C++17
 // SPDX-License-Identifier: MIT
 //
@@ -131,6 +130,7 @@
 //   inspect(fn), inspect_err(fn)
 //
 // See the documentation below each function for usage examples.
+// clang-format on
 
 #pragma once
 
@@ -167,6 +167,7 @@
 #define CPP_RESULT_FEATURE_OPTIONAL CPP_RESULT_FEATURE_ALL
 #endif
 
+// clang-format off
 /**
  * @def TRY(expr)
  * @brief Propagate errors like Rust's `?` operator.
@@ -174,19 +175,19 @@
  * Evaluates `expr` (which must return a Result). If it is an error, returns the
  * error from the current function. Otherwise, yields the value.
  *
- * @note This implementation is less optimal if your compiler does not support
- * statement expressions. It uses a lambda, which may result in less efficient
- * code and different scoping rules.
+ * @note This implementation needs your compiler support statement expressions.
  * @see Source code for the macro definition.
  *
  * Example:
  * @code
- * Result<int, std::string> parse_and_add(const std::string& a, const
- * std::string& b) { int x = TRY(parse_int(a)); int y = TRY(parse_int(b));
+ * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
+ *   int x = TRY(parse_int(a));
+ *   int y = TRY(parse_int(b));
  *   return Ok<int, std::string>(x + y);
  * }
  * @endcode
  */
+// clang-format on
 #if CPP_RESULT_HAS_STATEMENT_EXPR
 #define TRY(expr)                                                              \
   ({                                                                           \
@@ -196,20 +197,11 @@
       return __res_type::Err(__res.unwrap_err());                              \
     std::move(__res.unwrap());                                                 \
   })
-#else
-#define TRY(expr)                                                              \
-  ([&]() -> decltype(auto) {                                                   \
-    auto &&__res = (expr);                                                     \
-    using __res_type = std::decay_t<decltype(__res)>;                          \
-    if (__res.is_err())                                                        \
-      return __res_type::Err(__res.unwrap_err());                              \
-    return std::move(__res.unwrap());                                          \
-  }())
 #endif
 
 // clang-format off
 /**
- * @def TRYL(name, expr)
+ * @def TRY_ASSIGN(name, expr)
  * @brief Propagate errors and bind the value to a variable.
  *
  * Evaluates `expr` (which must return a Result). If it is an error, returns the
@@ -219,14 +211,14 @@
  * Example:
  * @code
  * Result<int, std::string> parse_and_add(const std::string& a, const std::string& b) {
- *   TRYL(x, parse_int(a));
- *   TRYL(y, parse_int(b));
+ *   TRY_ASSIGN(x, parse_int(a));
+ *   TRY_ASSIGN(y, parse_int(b));
  *   return Ok<int, std::string>(x + y);
  * }
  * @endcode
  */
 // clang-format on
-#define TRYL(name, expr)                                                       \
+#define TRY_ASSIGN(name, expr)                                                 \
   auto &&__res_##name = (expr);                                                \
   using __res_type_##name = std::decay_t<decltype(__res_##name)>;              \
   if (__res_##name.is_err())                                                   \
