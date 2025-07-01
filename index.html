@@ -37,7 +37,7 @@
             <tr id="projectrow">
               <td id="projectalign">
                 <div id="projectname">cpp_result<span
-                    id="projectnumber">&#160;def5410</span>
+                    id="projectnumber">&#160;79f2951</span>
                 </div>
               </td>
             </tr>
@@ -134,7 +134,7 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 <div class="line">  <span class="keywordflow">else</span></div>
 <div class="line">    std::cout &lt;&lt; r.unwrap_err().message &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>;</div>
 <div class="line">}</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html"><div class="ttname"><a href="classcpp__result_1_1Result.html">cpp_result::Result</a></div><div class="ttdoc">Result&lt;T, E&gt; - Holds either a value (Ok) or an error (Err).</div><div class="ttdef"><b>Definition</b> result.hpp:260</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html"><div class="ttname"><a href="classcpp__result_1_1Result.html">cpp_result::Result</a></div><div class="ttdoc">Result&lt;T, E&gt; - Holds either a value (Ok) or an error (Err).</div><div class="ttdef"><b>Definition</b> result.hpp:266</div></div>
 <div class="ttc" id="aresult_8hpp_html"><div class="ttname"><a href="result_8hpp.html">result.hpp</a></div></div>
 </div><!-- fragment --></li>
 </ul>
@@ -182,10 +182,17 @@ Macros: TRY and TRY_ASSIGN</h1>
 <div class="line">  <a class="code hl_define" href="result_8hpp.html#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a>(y, parse_int(b));</div>
 <div class="line">  <span class="keywordflow">return</span> Ok&lt;int, std::string&gt;(x + y);</div>
 <div class="line">}</div>
-<div class="ttc" id="anamespacecpp__result_html_adec4d3adc202b370f2f7054ac7b6c1d6"><div class="ttname"><a href="namespacecpp__result.html#adec4d3adc202b370f2f7054ac7b6c1d6">cpp_result::Ok</a></div><div class="ttdeci">Result&lt; T, E &gt; Ok(T val)</div><div class="ttdef"><b>Definition</b> result.hpp:1064</div></div>
-<div class="ttc" id="aresult_8hpp_html_a29b1d93746c5c993bfe11bee804b36f7"><div class="ttname"><a href="result_8hpp.html#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a></div><div class="ttdeci">#define TRY_ASSIGN(name, expr)</div><div class="ttdoc">Propagate errors and bind the value to a variable.</div><div class="ttdef"><b>Definition</b> result.hpp:221</div></div>
-<div class="ttc" id="aresult_8hpp_html_ac7041a9a9bc7a8547bb9995fd82a1ad7"><div class="ttname"><a href="result_8hpp.html#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a></div><div class="ttdeci">#define TRY(expr)</div><div class="ttdoc">Propagate errors like Rust&#39;s ? operator.</div><div class="ttdef"><b>Definition</b> result.hpp:192</div></div>
-</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>These macros require the function to return a compatible Result type. </dd></dl>
+<div class="ttc" id="anamespacecpp__result_html_adec4d3adc202b370f2f7054ac7b6c1d6"><div class="ttname"><a href="namespacecpp__result.html#adec4d3adc202b370f2f7054ac7b6c1d6">cpp_result::Ok</a></div><div class="ttdeci">Result&lt; T, E &gt; Ok(T val)</div><div class="ttdef"><b>Definition</b> result.hpp:1070</div></div>
+<div class="ttc" id="aresult_8hpp_html_a29b1d93746c5c993bfe11bee804b36f7"><div class="ttname"><a href="result_8hpp.html#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a></div><div class="ttdeci">#define TRY_ASSIGN(name, expr)</div><div class="ttdoc">Propagate errors and bind the value to a variable.</div><div class="ttdef"><b>Definition</b> result.hpp:227</div></div>
+<div class="ttc" id="aresult_8hpp_html_ac7041a9a9bc7a8547bb9995fd82a1ad7"><div class="ttname"><a href="result_8hpp.html#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a></div><div class="ttdeci">#define TRY(expr)</div><div class="ttdoc">Propagate errors like Rust&#39;s ? operator.</div><div class="ttdef"><b>Definition</b> result.hpp:198</div></div>
+</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>These macros require the function to return a compatible Result type.</dd></dl>
+<h1><a class="anchor" id="Known"></a>
+Limitations</h1>
+<ul>
+<li>The <code>TRY</code> macro requires your compiler to support statement expressions.</li>
+<li><code>T</code> and <code>E</code> must not be reference types.</li>
+<li><code>T</code> and <code>E</code> must not be same types. </li>
+</ul>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->

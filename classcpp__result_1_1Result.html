@@ -37,7 +37,7 @@
             <tr id="projectrow">
               <td id="projectalign">
                 <div id="projectname">cpp_result<span
-                    id="projectnumber">&#160;def5410</span>
+                    id="projectnumber">&#160;79f2951</span>
                 </div>
               </td>
             </tr>
@@ -253,7 +253,7 @@ class cpp_result::Result&lt; T, E &gt;</div><p>Result&lt;T, E&gt; - Holds either
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> r = <a class="code hl_function" href="namespacecpp__result.html#a9668e1a3487ccc7574cb3dfc3bf87f75">Ok&lt;int, std::string&gt;</a>(42);</div>
 <div class="line"><span class="keywordflow">if</span> (r.is_ok())</div>
 <div class="line"> std::cout &lt;&lt; r.unwrap();</div>
-<div class="ttc" id="anamespacecpp__result_html_a9668e1a3487ccc7574cb3dfc3bf87f75"><div class="ttname"><a href="namespacecpp__result.html#a9668e1a3487ccc7574cb3dfc3bf87f75">cpp_result::Ok</a></div><div class="ttdeci">Result&lt; void, E &gt; Ok()</div><div class="ttdef"><b>Definition</b> result.hpp:1070</div></div>
+<div class="ttc" id="anamespacecpp__result_html_a9668e1a3487ccc7574cb3dfc3bf87f75"><div class="ttname"><a href="namespacecpp__result.html#a9668e1a3487ccc7574cb3dfc3bf87f75">cpp_result::Ok</a></div><div class="ttdeci">Result&lt; void, E &gt; Ok()</div><div class="ttdef"><b>Definition</b> result.hpp:1076</div></div>
 </div><!-- fragment --> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2b49d4383b80e0fda08b3f9aeb8012a1" name="a2b49d4383b80e0fda08b3f9aeb8012a1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b49d4383b80e0fda08b3f9aeb8012a1">&#9670;&#160;</a></span>~Result()</h2>
@@ -467,7 +467,7 @@ template&lt;typename T, typename E&gt; </div>
 <p>Returns true if the result is Err and contains the given error. </p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> r = <a class="code hl_function" href="#ac5c2fe7195e24ef956ad8d75bda9cbe0">Err&lt;int, std::string&gt;</a>(<span class="stringliteral">&quot;fail&quot;</span>);</div>
 <div class="line">assert(r.contains_err(<span class="stringliteral">&quot;fail&quot;</span>));</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html_ac5c2fe7195e24ef956ad8d75bda9cbe0"><div class="ttname"><a href="#ac5c2fe7195e24ef956ad8d75bda9cbe0">cpp_result::Result::Err</a></div><div class="ttdeci">static Result Err(E err) noexcept</div><div class="ttdoc">Construct an Err result.</div><div class="ttdef"><b>Definition</b> result.hpp:289</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html_ac5c2fe7195e24ef956ad8d75bda9cbe0"><div class="ttname"><a href="#ac5c2fe7195e24ef956ad8d75bda9cbe0">cpp_result::Result::Err</a></div><div class="ttdeci">static Result Err(E err) noexcept</div><div class="ttdoc">Construct an Err result.</div><div class="ttdef"><b>Definition</b> result.hpp:295</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -507,9 +507,9 @@ template&lt;typename T, typename E&gt; </div>
 <div class="line"><span class="keyword">auto</span> r = <a class="code hl_function" href="#ac5c2fe7195e24ef956ad8d75bda9cbe0">Result::Err</a>(<span class="stringliteral">&quot;fail&quot;</span>);</div>
 <div class="line"><span class="comment">// or</span></div>
 <div class="line"><span class="keyword">auto</span> r2 = <a class="code hl_function" href="namespacecpp__result.html#a18423ada71b88fb179e02e2c4b4f833d">cpp_result::Err&lt;int, std::string&gt;</a>(<span class="stringliteral">&quot;fail&quot;</span>);</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html"><div class="ttname"><a href="classcpp__result_1_1Result.html">cpp_result::Result</a></div><div class="ttdoc">Result&lt;T, E&gt; - Holds either a value (Ok) or an error (Err).</div><div class="ttdef"><b>Definition</b> result.hpp:260</div></div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html_ab21bc11d77f171ea8fd8e9bc3c975153"><div class="ttname"><a href="#ab21bc11d77f171ea8fd8e9bc3c975153">cpp_result::Result::Result</a></div><div class="ttdeci">Result(Result &amp;&amp;other) noexcept(std::is_nothrow_move_constructible_v&lt; T &gt; &amp;&amp;std::is_nothrow_move_constructible_v&lt; E &gt;)</div><div class="ttdef"><b>Definition</b> result.hpp:667</div></div>
-<div class="ttc" id="anamespacecpp__result_html_a18423ada71b88fb179e02e2c4b4f833d"><div class="ttname"><a href="namespacecpp__result.html#a18423ada71b88fb179e02e2c4b4f833d">cpp_result::Err</a></div><div class="ttdeci">Result&lt; T, E &gt; Err(E err)</div><div class="ttdef"><b>Definition</b> result.hpp:1067</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html"><div class="ttname"><a href="classcpp__result_1_1Result.html">cpp_result::Result</a></div><div class="ttdoc">Result&lt;T, E&gt; - Holds either a value (Ok) or an error (Err).</div><div class="ttdef"><b>Definition</b> result.hpp:266</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html_ab21bc11d77f171ea8fd8e9bc3c975153"><div class="ttname"><a href="#ab21bc11d77f171ea8fd8e9bc3c975153">cpp_result::Result::Result</a></div><div class="ttdeci">Result(Result &amp;&amp;other) noexcept(std::is_nothrow_move_constructible_v&lt; T &gt; &amp;&amp;std::is_nothrow_move_constructible_v&lt; E &gt;)</div><div class="ttdef"><b>Definition</b> result.hpp:673</div></div>
+<div class="ttc" id="anamespacecpp__result_html_a18423ada71b88fb179e02e2c4b4f833d"><div class="ttname"><a href="namespacecpp__result.html#a18423ada71b88fb179e02e2c4b4f833d">cpp_result::Err</a></div><div class="ttdeci">Result&lt; T, E &gt; Err(E err)</div><div class="ttdef"><b>Definition</b> result.hpp:1073</div></div>
 </div><!-- fragment --> </dd></dl>
 
 </div>
@@ -543,7 +543,7 @@ template&lt;typename T, typename E&gt; </div>
 <div class="fragment"><div class="line"><a class="code hl_function" href="#ab21bc11d77f171ea8fd8e9bc3c975153">Result&lt;int, std::string&gt;</a> r = <a class="code hl_function" href="#ac5c2fe7195e24ef956ad8d75bda9cbe0">Result&lt;int, std::string&gt;::Err</a>(<span class="stringliteral">&quot;fail&quot;</span>);</div>
 <div class="line">std::optional&lt;std::string&gt; opt = r.<a class="code hl_function" href="#af03d68a21373e18ee48176ecfa72cd93">err</a>();</div>
 <div class="line">assert(opt.has_value() &amp;&amp; *opt == <span class="stringliteral">&quot;fail&quot;</span>);</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html_af03d68a21373e18ee48176ecfa72cd93"><div class="ttname"><a href="#af03d68a21373e18ee48176ecfa72cd93">cpp_result::Result::err</a></div><div class="ttdeci">std::optional&lt; E &gt; err() const</div><div class="ttdoc">Returns the error as std::optional if Err, otherwise std::nullopt.</div><div class="ttdef"><b>Definition</b> result.hpp:659</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html_af03d68a21373e18ee48176ecfa72cd93"><div class="ttname"><a href="#af03d68a21373e18ee48176ecfa72cd93">cpp_result::Result::err</a></div><div class="ttdeci">std::optional&lt; E &gt; err() const</div><div class="ttdoc">Returns the error as std::optional if Err, otherwise std::nullopt.</div><div class="ttdef"><b>Definition</b> result.hpp:665</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -692,7 +692,7 @@ template&lt;typename T, typename E&gt; </div>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> inner = <a class="code hl_function" href="namespacecpp__result.html#a9668e1a3487ccc7574cb3dfc3bf87f75">Ok&lt;int, std::string&gt;</a>(42);</div>
 <div class="line"><span class="keyword">auto</span> outer = <a class="code hl_function" href="#acdf95c036afec0d5dd64d44bb6da23c6">Ok&lt;Result&lt;int, std::string&gt;</a>, std::string&gt;(inner);</div>
 <div class="line">assert(outer.flatten().unwrap() == 42);</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html_acdf95c036afec0d5dd64d44bb6da23c6"><div class="ttname"><a href="#acdf95c036afec0d5dd64d44bb6da23c6">cpp_result::Result::Ok</a></div><div class="ttdeci">static Result Ok(T val) noexcept</div><div class="ttdoc">Construct an Ok result.</div><div class="ttdef"><b>Definition</b> result.hpp:276</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html_acdf95c036afec0d5dd64d44bb6da23c6"><div class="ttname"><a href="#acdf95c036afec0d5dd64d44bb6da23c6">cpp_result::Result::Ok</a></div><div class="ttdeci">static Result Ok(T val) noexcept</div><div class="ttdoc">Construct an Ok result.</div><div class="ttdef"><b>Definition</b> result.hpp:282</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -1105,7 +1105,7 @@ template&lt;typename T, typename E&gt; </div>
 <div class="fragment"><div class="line"><a class="code hl_function" href="#ab21bc11d77f171ea8fd8e9bc3c975153">Result&lt;int, std::string&gt;</a> r = <a class="code hl_function" href="#acdf95c036afec0d5dd64d44bb6da23c6">Result&lt;int, std::string&gt;::Ok</a>(42);</div>
 <div class="line">std::optional&lt;int&gt; opt = r.<a class="code hl_function" href="#a978e3649f7125658e55c850d12d8a145">ok</a>();</div>
 <div class="line">assert(opt.has_value() &amp;&amp; *opt == 42);</div>
-<div class="ttc" id="aclasscpp__result_1_1Result_html_a978e3649f7125658e55c850d12d8a145"><div class="ttname"><a href="#a978e3649f7125658e55c850d12d8a145">cpp_result::Result::ok</a></div><div class="ttdeci">std::optional&lt; T &gt; ok() const</div><div class="ttdoc">Returns the value as std::optional if Ok, otherwise std::nullopt.</div><div class="ttdef"><b>Definition</b> result.hpp:647</div></div>
+<div class="ttc" id="aclasscpp__result_1_1Result_html_a978e3649f7125658e55c850d12d8a145"><div class="ttname"><a href="#a978e3649f7125658e55c850d12d8a145">cpp_result::Result::ok</a></div><div class="ttdeci">std::optional&lt; T &gt; ok() const</div><div class="ttdoc">Returns the value as std::optional if Ok, otherwise std::nullopt.</div><div class="ttdef"><b>Definition</b> result.hpp:653</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
