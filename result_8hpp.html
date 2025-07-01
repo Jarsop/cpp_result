@@ -37,7 +37,7 @@
             <tr id="projectrow">
               <td id="projectalign">
                 <div id="projectname">cpp_result<span
-                    id="projectnumber">&#160;f19982d</span>
+                    id="projectnumber">&#160;def5410</span>
                 </div>
               </td>
             </tr>
@@ -157,9 +157,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ac7041a9a9bc7a8547bb9995fd82a1ad7" id="r_ac7041a9a9bc7a8547bb9995fd82a1ad7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a>(expr)</td></tr>
 <tr class="memdesc:ac7041a9a9bc7a8547bb9995fd82a1ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagate errors like Rust's <code>?</code> operator.  <br /></td></tr>
 <tr class="separator:ac7041a9a9bc7a8547bb9995fd82a1ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadc944e6d1cf3b86f1361b794f56a63c" id="r_aadc944e6d1cf3b86f1361b794f56a63c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadc944e6d1cf3b86f1361b794f56a63c">TRYL</a>(name,  expr)</td></tr>
-<tr class="memdesc:aadc944e6d1cf3b86f1361b794f56a63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagate errors and bind the value to a variable.  <br /></td></tr>
-<tr class="separator:aadc944e6d1cf3b86f1361b794f56a63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29b1d93746c5c993bfe11bee804b36f7" id="r_a29b1d93746c5c993bfe11bee804b36f7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a>(name,  expr)</td></tr>
+<tr class="memdesc:a29b1d93746c5c993bfe11bee804b36f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagate errors and bind the value to a variable.  <br /></td></tr>
+<tr class="separator:a29b1d93746c5c993bfe11bee804b36f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab43fba1ff9c05c2d0a88d10b4c0e7464" id="r_ab43fba1ff9c05c2d0a88d10b4c0e7464"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab43fba1ff9c05c2d0a88d10b4c0e7464">EXPECT_OR_ABORT</a>(cond,  msg)</td></tr>
 <tr class="separator:ab43fba1ff9c05c2d0a88d10b4c0e7464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -343,24 +343,25 @@ Functions</h2></td></tr>
 </div><!-- fragment -->
 <p>Propagate errors like Rust's <code>?</code> operator. </p>
 <p>Evaluates <code>expr</code> (which must return a Result). If it is an error, returns the error from the current function. Otherwise, yields the value.</p>
-<dl class="section note"><dt>Note</dt><dd>This implementation is less optimal if your compiler does not support statement expressions. It uses a lambda, which may result in less efficient code and different scoping rules. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This implementation needs your compiler support statement expressions. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd>Source code for the macro definition.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line">Result&lt;int, std::string&gt; parse_and_add(<span class="keyword">const</span> std::string&amp; a, <span class="keyword">const</span></div>
-<div class="line">std::string&amp; b) { <span class="keywordtype">int</span> x = <a class="code hl_define" href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a>(parse_int(a)); <span class="keywordtype">int</span> y = <a class="code hl_define" href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a>(parse_int(b));</div>
+<p>Example: </p><div class="fragment"><div class="line">Result&lt;int, std::string&gt; parse_and_add(<span class="keyword">const</span> std::string&amp; a, <span class="keyword">const</span> std::string&amp; b) {</div>
+<div class="line">  <span class="keywordtype">int</span> x = <a class="code hl_define" href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a>(parse_int(a));</div>
+<div class="line">  <span class="keywordtype">int</span> y = <a class="code hl_define" href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a>(parse_int(b));</div>
 <div class="line">  <span class="keywordflow">return</span> Ok&lt;int, std::string&gt;(x + y);</div>
 <div class="line">}</div>
-<div class="ttc" id="aresult_8hpp_html_ac7041a9a9bc7a8547bb9995fd82a1ad7"><div class="ttname"><a href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a></div><div class="ttdeci">#define TRY(expr)</div><div class="ttdoc">Propagate errors like Rust&#39;s ? operator.</div><div class="ttdef"><b>Definition</b> result.hpp:191</div></div>
+<div class="ttc" id="aresult_8hpp_html_ac7041a9a9bc7a8547bb9995fd82a1ad7"><div class="ttname"><a href="#ac7041a9a9bc7a8547bb9995fd82a1ad7">TRY</a></div><div class="ttdeci">#define TRY(expr)</div><div class="ttdoc">Propagate errors like Rust&#39;s ? operator.</div><div class="ttdef"><b>Definition</b> result.hpp:192</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
-<a id="aadc944e6d1cf3b86f1361b794f56a63c" name="aadc944e6d1cf3b86f1361b794f56a63c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadc944e6d1cf3b86f1361b794f56a63c">&#9670;&#160;</a></span>TRYL</h2>
+<a id="a29b1d93746c5c993bfe11bee804b36f7" name="a29b1d93746c5c993bfe11bee804b36f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29b1d93746c5c993bfe11bee804b36f7">&#9670;&#160;</a></span>TRY_ASSIGN</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define TRYL</td>
+          <td class="memname">#define TRY_ASSIGN</td>
           <td>(</td>
           <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
         </tr>
@@ -380,11 +381,11 @@ Functions</h2></td></tr>
 <p>Propagate errors and bind the value to a variable. </p>
 <p>Evaluates <code>expr</code> (which must return a Result). If it is an error, returns the error from the current function. Otherwise, binds the unwrapped value to the variable <code>name</code>.</p>
 <p>Example: </p><div class="fragment"><div class="line">Result&lt;int, std::string&gt; parse_and_add(<span class="keyword">const</span> std::string&amp; a, <span class="keyword">const</span> std::string&amp; b) {</div>
-<div class="line">  <a class="code hl_define" href="#aadc944e6d1cf3b86f1361b794f56a63c">TRYL</a>(x, parse_int(a));</div>
-<div class="line">  <a class="code hl_define" href="#aadc944e6d1cf3b86f1361b794f56a63c">TRYL</a>(y, parse_int(b));</div>
+<div class="line">  <a class="code hl_define" href="#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a>(x, parse_int(a));</div>
+<div class="line">  <a class="code hl_define" href="#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a>(y, parse_int(b));</div>
 <div class="line">  <span class="keywordflow">return</span> Ok&lt;int, std::string&gt;(x + y);</div>
 <div class="line">}</div>
-<div class="ttc" id="aresult_8hpp_html_aadc944e6d1cf3b86f1361b794f56a63c"><div class="ttname"><a href="#aadc944e6d1cf3b86f1361b794f56a63c">TRYL</a></div><div class="ttdeci">#define TRYL(name, expr)</div><div class="ttdoc">Propagate errors and bind the value to a variable.</div><div class="ttdef"><b>Definition</b> result.hpp:229</div></div>
+<div class="ttc" id="aresult_8hpp_html_a29b1d93746c5c993bfe11bee804b36f7"><div class="ttname"><a href="#a29b1d93746c5c993bfe11bee804b36f7">TRY_ASSIGN</a></div><div class="ttdeci">#define TRY_ASSIGN(name, expr)</div><div class="ttdoc">Propagate errors and bind the value to a variable.</div><div class="ttdef"><b>Definition</b> result.hpp:221</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

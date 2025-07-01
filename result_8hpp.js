@@ -12,7 +12,7 @@ var result_8hpp =
     [ "CPP_RESULT_FEATURE_UNWRAP", "result_8hpp.html#a51a59c6423079370d5d7d7a262ac3590", null ],
     [ "EXPECT_OR_ABORT", "result_8hpp.html#ab43fba1ff9c05c2d0a88d10b4c0e7464", null ],
     [ "TRY", "result_8hpp.html#ac7041a9a9bc7a8547bb9995fd82a1ad7", null ],
-    [ "TRYL", "result_8hpp.html#aadc944e6d1cf3b86f1361b794f56a63c", null ],
+    [ "TRY_ASSIGN", "result_8hpp.html#a29b1d93746c5c993bfe11bee804b36f7", null ],
     [ "cpp_result::Err", "namespacecpp__result.html#a18423ada71b88fb179e02e2c4b4f833d", null ],
     [ "cpp_result::Err", "namespacecpp__result.html#a47efeb706677f181977a7aaf8c8aebb6", null ],
     [ "cpp_result::Ok", "namespacecpp__result.html#a9668e1a3487ccc7574cb3dfc3bf87f75", null ],
